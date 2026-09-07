@@ -1,0 +1,69 @@
+<div class="app-container">
+  <header class="app-header">
+    <h1>Gestión de Estudiantes & Créditos</h1>
+    <p>Consumo de API REST - Angular Client</p>
+  </header>
+
+  <app-student-form
+    [studentToEdit]="selectedStudentToEdit"
+    (formSubmitted)="onFormSubmitted()"
+    (cancelEdit)="onCancelEdit()">
+  </app-student-form>
+
+  <div class="card list-card">
+    <div class="list-header">
+      <h2>Estudiantes Registrados</h2>
+      <button class="btn btn-secondary btn-sm" (click)="loadStudents()">Refrescar Datos</button>
+    </div>
+
+    <div *ngIf="loading" class="spinner">Cargando datos de la API...</div>
+
+    <div *ngIf="apiError" class="alert alert-danger">{{ apiError }}</div>
+
+    <table *ngIf="!loading && students.length > 0" class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Materias Inscritas</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let student of students">
+          <td><small>{{ student.id }}</small></td>
+          <td><strong>{{ student.name }}</strong></td>
+          <td>{{ student.email }}</td>
+          <td><span class="badge">{{ student.subjectIds.length || 0 }} Materias</span></td>
+          <td class="actions-cell">
+            <button class="btn btn-info btn-sm" (click)="onViewClassmates(student)">Compañeros</button>
+            <button class="btn btn-warning btn-sm" (click)="onEdit(student)">Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="onDelete(student.id!)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p *ngIf="!loading && students.length === 0" class="empty-msg">No hay estudiantes registrados actualmente.</p>
+  </div>
+
+  <!-- Modal para ver compañeros -->
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Compañeros de Clase: {{ selectedStudentName }}</h3>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div *ngFor="let item of selectedClassmates" class="classmate-group">
+          <h4>{{ item.subjectName }}</h4>
+          <ul *ngIf="item.classmates && item.classmates.length > 0">
+            <li *ngFor="let name of item.classmates">{{ name }}</li>
+          </ul>
+          <p *ngIf="!item.classmates || item.classmates.length === 0" class="text-muted">Sin otros compañeros inscritos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,52 @@
+<div class="card form-card">
+  <h2>{{ studentToEdit ? 'Editar Estudiante' : 'Registro de Estudiante' }}</h2>
+
+  <!-- Banner de Excepción / Error del Sistema -->
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-content">
+      <strong>Error del sistema:</strong>
+      <p>{{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Nombre Completo</label>
+      <input id="name" type="text" formControlName="name" placeholder="Ej. María Gómez" class="form-control" />
+      <span *ngIf="studentForm.get('name')?.touched && studentForm.get('name')?.invalid" class="field-error">
+        El nombre es obligatorio (mínimo 3 caracteres).
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Correo Electrónico</label>
+      <input id="email" type="email" formControlName="email" placeholder="ejemplo@correo.com" class="form-control" />
+      <span *ngIf="studentForm.get('email')?.touched && studentForm.get('email')?.invalid" class="field-error">
+        Ingrese un correo electrónico válido.
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label>Selección de Materias (3 créditos c/u - Seleccione exactamente 3 de profesores distintos)</label>
+      <div class="subject-grid" formGroupName="subjects">
+        <div *ngFor="let subject of subjectsList" class="subject-item">
+          <label class="checkbox-container">
+            <input type="checkbox" [formControlName]="subject.id" />
+            <span class="checkmark"></span>
+            <div class="subject-info">
+              <strong>{{ subject.name }}</strong>
+              <small>Profesor: {{ subject.teacherId }} | {{ subject.credits }} Créditos</small>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Procesando...' : (studentToEdit ? 'Actualizar' : 'Registrar Estudiante') }}
+      </button>
+    </div>
+  </form>
+</div>
